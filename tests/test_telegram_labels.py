@@ -68,6 +68,27 @@ def _install_fake_gateway(monkeypatch, adapter_cls):
     return telegram
 
 
+def _install_fake_plugin_telegram(monkeypatch, adapter_cls):
+    """Wire a fake ``plugins.platforms.telegram.adapter`` into sys.modules."""
+    telegram = types.ModuleType("plugins.platforms.telegram.adapter")
+    telegram.TelegramAdapter = adapter_cls
+    telegram.InlineKeyboardButton = _FakeButton
+    telegram.InlineKeyboardMarkup = _FakeMarkup
+
+    telegram_pkg = types.ModuleType("plugins.platforms.telegram")
+    telegram_pkg.adapter = telegram
+    platforms = types.ModuleType("plugins.platforms")
+    platforms.telegram = telegram_pkg
+    plugins = types.ModuleType("plugins")
+    plugins.platforms = platforms
+
+    monkeypatch.setitem(sys.modules, "plugins", plugins)
+    monkeypatch.setitem(sys.modules, "plugins.platforms", platforms)
+    monkeypatch.setitem(sys.modules, "plugins.platforms.telegram", telegram_pkg)
+    monkeypatch.setitem(sys.modules, "plugins.platforms.telegram.adapter", telegram)
+    return telegram
+
+
 def test_patch_relabels_only_model_buttons(monkeypatch):
     from clawrouter_hermes import _patch_telegram_model_labels
 
@@ -96,6 +117,25 @@ def test_patch_relabels_only_model_buttons(monkeypatch):
 
     # page_info is forwarded verbatim from the original method.
     assert page_info == " (1–2)"
+
+
+def test_patch_relabels_active_plugin_telegram_adapter(monkeypatch):
+    from clawrouter_hermes import _patch_telegram_model_labels
+
+    adapter_cls = _make_adapter_class(with_keyboard=True)
+    _install_fake_plugin_telegram(monkeypatch, adapter_cls)
+
+    _patch_telegram_model_labels()
+    assert adapter_cls._clawrouter_labels_patched is True
+
+    models = ["blockrun/free/gpt-oss-120b", "blockrun/openai/gpt-5.6-sol"]
+    markup, _page_info = adapter_cls._build_model_keyboard(adapter_cls(), models, 0)
+
+    free_btn, paid_btn = markup.inline_keyboard[0]
+    assert free_btn.text == "[FREE] gpt-oss-120b"
+    assert free_btn.callback_data == "mm:0"
+    assert paid_btn.text == "gpt-5.6-sol"
+    assert paid_btn.callback_data == "mm:1"
 
 
 def test_patch_is_idempotent(monkeypatch):

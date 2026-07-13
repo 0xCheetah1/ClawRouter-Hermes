@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import ast
 import importlib.resources as resources
+import sys
+import types
 
 
 def _template_dir():
@@ -74,36 +76,78 @@ def test_curated_picker_catalog_orders_featured_models():
     positions = {model: idx for idx, model in enumerate(chat_models)}
     assert chat_models[:4] == [
         "blockrun/auto",
-        "blockrun/free",
-        "blockrun/eco",
         "blockrun/premium",
+        "blockrun/eco",
+        "blockrun/free",
     ]
-    # Relative order mirrors ClawRouter's top-models.json: sonnet before opus,
-    # deepseek/moonshot before xai, free block before the zai/glm block.
     featured_order = [
-        "blockrun/anthropic/claude-sonnet-4.6",
         "blockrun/anthropic/claude-opus-4.8",
+        "blockrun/anthropic/claude-opus-4.7",
+        "blockrun/anthropic/claude-sonnet-5",
+        "blockrun/anthropic/claude-sonnet-4.6",
+        "blockrun/openai/gpt-5.6-sol",
+        "blockrun/openai/gpt-5.6-terra",
+        "blockrun/openai/gpt-5.6-luna",
         "blockrun/openai/gpt-5.5",
-        "blockrun/google/gemini-3.1-pro",
+        "blockrun/google/gemini-3.5-flash",
         "blockrun/deepseek/deepseek-v4-pro",
         "blockrun/moonshot/kimi-k2.7",
         "blockrun/xai/grok-4.3",
+        "blockrun/zai/glm-5.2",
         "blockrun/minimax/minimax-m3",
         "blockrun/free/gpt-oss-120b",
-        "blockrun/zai/glm-5.2",
     ]
     assert [positions[model] for model in featured_order] == sorted(
         positions[model] for model in featured_order
     )
-    # The zai/glm block is the tail of the catalog, matching ClawRouter.
-    assert chat_models[-4:] == [
-        "blockrun/zai/glm-5.2",
-        "blockrun/zai/glm-5.1",
-        "blockrun/zai/glm-5",
-        "blockrun/zai/glm-5-turbo",
+    assert chat_models[-8:] == [
+        "blockrun/free/gpt-oss-120b",
+        "blockrun/free/gpt-oss-20b",
+        "blockrun/free/mistral-large-3-675b",
+        "blockrun/free/qwen3.5-122b-a10b",
+        "blockrun/free/qwen3-next-80b-a3b-instruct",
+        "blockrun/free/llama-4-maverick",
+        "blockrun/free/seed-oss-36b",
+        "blockrun/free/nemotron-3-nano-omni-30b-a3b-reasoning",
     ]
     # Retired model must not reappear in the picker (NVIDIA EOL 2026-06-14).
     assert "blockrun/free/qwen3-coder-480b" not in chat_models
+
+
+def test_patch_hermes_model_catalog_uses_curated_clawrouter_only(monkeypatch):
+    import clawrouter_hermes.cli as cli_module
+    from clawrouter_hermes import models
+
+    clear_calls = []
+    hermes_models = types.ModuleType("hermes_cli.models")
+    hermes_models._PROVIDER_MODELS = {}
+
+    def provider_model_ids(provider, *_, **__):
+        return ["auto", "eco", "openai/gpt-5.6-sol"] if provider == "clawrouter" else ["other"]
+
+    def cached_provider_model_ids(provider, *_, **__):
+        return ["auto", "eco", "openai/gpt-5.6-sol"] if provider == "clawrouter" else ["cached-other"]
+
+    def clear_provider_models_cache(provider=None):
+        clear_calls.append(provider)
+
+    hermes_models.provider_model_ids = provider_model_ids
+    hermes_models.cached_provider_model_ids = cached_provider_model_ids
+    hermes_models.clear_provider_models_cache = clear_provider_models_cache
+
+    hermes_cli = types.ModuleType("hermes_cli")
+    hermes_cli.models = hermes_models
+    monkeypatch.setitem(sys.modules, "hermes_cli", hermes_cli)
+    monkeypatch.setitem(sys.modules, "hermes_cli.models", hermes_models)
+
+    cli_module.patch_hermes_model_catalog()
+
+    assert hermes_models._PROVIDER_MODELS["clawrouter"] == models.chat_models()
+    assert hermes_models.provider_model_ids("clawrouter") == models.chat_models()
+    assert hermes_models.cached_provider_model_ids("blockrun") == models.chat_models()
+    assert hermes_models.provider_model_ids("openai") == ["other"]
+    assert hermes_models.cached_provider_model_ids("openai") == ["cached-other"]
+    assert clear_calls == ["clawrouter"]
 
 
 def test_materialize_writes_correct_filenames(tmp_path, monkeypatch):
@@ -141,6 +185,7 @@ def test_install_hermes_compat_writes_provider_env_and_config(tmp_path, monkeypa
     assert config["model"]["provider"] == "clawrouter"
     assert config["model"]["default"] == "blockrun/auto"
     assert config["providers"]["clawrouter"]["key_env"] == "CLAWROUTER_API_KEY"
+    assert config["providers"]["clawrouter"]["discover_models"] is False
     assert "blockrun/auto" in config["providers"]["clawrouter"]["models"]
 
 
