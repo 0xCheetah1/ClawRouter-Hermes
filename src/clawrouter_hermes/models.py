@@ -7,36 +7,44 @@ rendering ``ClawRouter (0 models)`` without flooding small inline keyboards.
 
 from __future__ import annotations
 
-# Order and membership mirror ClawRouter's src/top-models.json (the source of
-# truth). Keep this list in lockstep with that file: same models, same order.
+# Curated, provider-grouped picker order. Keep this list in lockstep with the
+# materialized provider template below.
 CHAT_MODELS = (
     "blockrun/auto",
-    "blockrun/free",
-    "blockrun/eco",
     "blockrun/premium",
-    "blockrun/anthropic/claude-sonnet-4.6",
+    "blockrun/eco",
+    "blockrun/free",
     "blockrun/anthropic/claude-opus-4.8",
     "blockrun/anthropic/claude-opus-4.7",
+    "blockrun/anthropic/claude-sonnet-5",
+    "blockrun/anthropic/claude-sonnet-4.6",
     "blockrun/anthropic/claude-haiku-4.5",
+    "blockrun/openai/gpt-5.6-sol",
+    "blockrun/openai/gpt-5.6-terra",
+    "blockrun/openai/gpt-5.6-luna",
     "blockrun/openai/gpt-5.5",
+    "blockrun/openai/gpt-5.4-pro",
     "blockrun/openai/gpt-5.4",
     "blockrun/openai/gpt-5.4-mini",
-    "blockrun/openai/gpt-5.4-pro",
-    "blockrun/openai/gpt-5.3-codex",
     "blockrun/openai/gpt-5.4-nano",
+    "blockrun/openai/gpt-5.3-codex",
+    "blockrun/google/gemini-3.5-flash",
     "blockrun/google/gemini-3.1-pro",
     "blockrun/google/gemini-3.1-flash-lite",
-    "blockrun/google/gemini-3.5-flash",
     "blockrun/google/gemini-3-flash-preview",
     "blockrun/deepseek/deepseek-v4-pro",
     "blockrun/deepseek/deepseek-chat",
     "blockrun/deepseek/deepseek-reasoner",
     "blockrun/moonshot/kimi-k2.7",
     "blockrun/xai/grok-4.3",
+    "blockrun/xai/grok-4-1-fast-reasoning",
+    "blockrun/xai/grok-4-0709",
     "blockrun/xai/grok-build-0.1",
     "blockrun/xai/grok-3",
-    "blockrun/xai/grok-4-0709",
-    "blockrun/xai/grok-4-1-fast-reasoning",
+    "blockrun/zai/glm-5.2",
+    "blockrun/zai/glm-5.1",
+    "blockrun/zai/glm-5",
+    "blockrun/zai/glm-5-turbo",
     "blockrun/minimax/minimax-m3",
     "blockrun/minimax/minimax-m2.7",
     "blockrun/free/gpt-oss-120b",
@@ -47,10 +55,6 @@ CHAT_MODELS = (
     "blockrun/free/llama-4-maverick",
     "blockrun/free/seed-oss-36b",
     "blockrun/free/nemotron-3-nano-omni-30b-a3b-reasoning",
-    "blockrun/zai/glm-5.2",
-    "blockrun/zai/glm-5.1",
-    "blockrun/zai/glm-5",
-    "blockrun/zai/glm-5-turbo",
 )
 
 def chat_models() -> list[str]:

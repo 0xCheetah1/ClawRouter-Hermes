@@ -72,48 +72,67 @@ def _patch_telegram_model_labels() -> None:
     wrapper degrades to a transparent pass-through instead of breaking the
     picker.
     """
-    try:
-        from gateway.platforms import telegram
-    except Exception:
-        return
+    import importlib
 
-    adapter = getattr(telegram, "TelegramAdapter", None)
-    if adapter is None or getattr(adapter, "_clawrouter_labels_patched", False):
-        return
+    patched = False
+    for module_name in (
+        "gateway.platforms.telegram",
+        "plugins.platforms.telegram.adapter",
+    ):
+        try:
+            telegram = importlib.import_module(module_name)
+        except Exception:
+            continue
 
-    original = getattr(adapter, "_build_model_keyboard", None)
-    inline_button = getattr(telegram, "InlineKeyboardButton", None)
-    inline_markup = getattr(telegram, "InlineKeyboardMarkup", None)
-    if original is None or inline_button is None or inline_markup is None:
-        return
+        adapter = getattr(telegram, "TelegramAdapter", None)
+        if adapter is None or getattr(adapter, "_clawrouter_labels_patched", False):
+            continue
 
-    def _build_model_keyboard(self, model_list: list, page: int):
-        markup, page_info = original(self, model_list, page)
+        original = getattr(adapter, "_build_model_keyboard", None)
+        inline_button = getattr(telegram, "InlineKeyboardButton", None)
+        inline_markup = getattr(telegram, "InlineKeyboardMarkup", None)
+        if original is None or inline_button is None or inline_markup is None:
+            continue
 
-        # Model-selection buttons carry ``mm:<abs_idx>`` callback data, where
-        # abs_idx indexes into model_list. Rebuild only those buttons with a
-        # free-aware label; pass every other button (nav/back/cancel) through
-        # untouched. We rebuild instead of mutating .text because telegram
-        # button objects may be frozen.
-        new_rows = []
-        for row in getattr(markup, "inline_keyboard", []) or []:
-            new_row = []
-            for btn in row:
-                cd = getattr(btn, "callback_data", "") or ""
-                if cd.startswith("mm:"):
-                    try:
-                        abs_idx = int(cd.split(":", 1)[1])
-                        label = _models.picker_label(str(model_list[abs_idx]))
-                        new_row.append(inline_button(label, callback_data=cd))
-                        continue
-                    except (ValueError, IndexError):
-                        pass
-                new_row.append(btn)
-            new_rows.append(new_row)
-        return inline_markup(new_rows), page_info
+        def _build_model_keyboard(
+            self,
+            model_list: list,
+            page: int,
+            *,
+            _original=original,
+            _inline_button=inline_button,
+            _inline_markup=inline_markup,
+        ):
+            markup, page_info = _original(self, model_list, page)
 
-    adapter._build_model_keyboard = _build_model_keyboard
-    adapter._clawrouter_labels_patched = True
+            # Model-selection buttons carry ``mm:<abs_idx>`` callback data, where
+            # abs_idx indexes into model_list. Rebuild only those buttons with a
+            # free-aware label; pass every other button (nav/back/cancel) through
+            # untouched. We rebuild instead of mutating .text because telegram
+            # button objects may be frozen.
+            new_rows = []
+            for row in getattr(markup, "inline_keyboard", []) or []:
+                new_row = []
+                for btn in row:
+                    cd = getattr(btn, "callback_data", "") or ""
+                    if cd.startswith("mm:"):
+                        try:
+                            abs_idx = int(cd.split(":", 1)[1])
+                            label = _models.picker_label(str(model_list[abs_idx]))
+                            new_row.append(_inline_button(label, callback_data=cd))
+                            continue
+                        except (ValueError, IndexError):
+                            pass
+                    new_row.append(btn)
+                new_rows.append(new_row)
+            return _inline_markup(new_rows), page_info
+
+        adapter._build_model_keyboard = _build_model_keyboard
+        adapter._clawrouter_labels_patched = True
+        patched = True
+
+    if not patched:
+        logger.debug("clawrouter: no Telegram adapter found for free-model label patch")
 
 
 def _register_tools(ctx) -> None:

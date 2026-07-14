@@ -295,6 +295,7 @@ def _configure_hermes_provider(*, set_default_force: bool = False) -> bool:
         "key_env": "CLAWROUTER_API_KEY",
         "transport": "openai_chat",
         "default_model": "blockrun/auto",
+        "discover_models": False,
         "models": models.chat_models(),
     }
     current = providers.get("clawrouter")
@@ -302,9 +303,6 @@ def _configure_hermes_provider(*, set_default_force: bool = False) -> bool:
         providers["clawrouter"] = desired
         changed = True
     else:
-        if "discover_models" in current:
-            current.pop("discover_models", None)
-            changed = True
         for key, value in desired.items():
             if current.get(key) != value:
                 current[key] = value
@@ -344,6 +342,40 @@ def patch_hermes_model_catalog() -> None:
     provider_models = getattr(hermes_models, "_PROVIDER_MODELS", None)
     if isinstance(provider_models, dict):
         provider_models["clawrouter"] = models.chat_models()
+
+    if getattr(hermes_models, "_clawrouter_catalog_patched", False):
+        return
+
+    def _is_clawrouter(provider: object) -> bool:
+        return str(provider or "").strip().lower() in {"clawrouter", "blockrun", "claw"}
+
+    original_provider_model_ids = getattr(hermes_models, "provider_model_ids", None)
+    if callable(original_provider_model_ids):
+
+        def provider_model_ids(provider, *args, **kwargs):
+            if _is_clawrouter(provider):
+                return models.chat_models()
+            return original_provider_model_ids(provider, *args, **kwargs)
+
+        hermes_models.provider_model_ids = provider_model_ids
+
+    original_cached_provider_model_ids = getattr(hermes_models, "cached_provider_model_ids", None)
+    if callable(original_cached_provider_model_ids):
+
+        def cached_provider_model_ids(provider, *args, **kwargs):
+            if _is_clawrouter(provider):
+                return models.chat_models()
+            return original_cached_provider_model_ids(provider, *args, **kwargs)
+
+        hermes_models.cached_provider_model_ids = cached_provider_model_ids
+
+    try:
+        clear_provider_models_cache = getattr(hermes_models, "clear_provider_models_cache")
+        clear_provider_models_cache("clawrouter")
+    except Exception:
+        pass
+
+    hermes_models._clawrouter_catalog_patched = True
 
 
 def _wallet(args: argparse.Namespace) -> None:
