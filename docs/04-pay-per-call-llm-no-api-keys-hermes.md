@@ -161,6 +161,6 @@ per-provider OAuth/key code paths behind reports like
 
 ---
 
-*Last reviewed against Hermes Agent v0.15.x. Pay-per-call billing uses the open
+*Last reviewed against Hermes Agent v0.18.x. Pay-per-call billing uses the open
 [x402](https://github.com/coinbase/x402) standard; ClawRouter is the gateway that
 brings it to Hermes with non-custodial USDC settlement.*

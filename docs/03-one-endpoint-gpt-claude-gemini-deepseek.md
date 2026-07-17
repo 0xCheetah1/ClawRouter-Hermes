@@ -165,6 +165,6 @@ Z.AI/GLM, NVIDIA-hosted open models, and more — plus a few free tiers.
 
 ---
 
-*Last reviewed against Hermes Agent v0.15.x. The single-endpoint pattern is provider-
+*Last reviewed against Hermes Agent v0.18.x. The single-endpoint pattern is provider-
 agnostic; ClawRouter is the implementation that adds non-custodial pay-per-call
 billing and 55+ models behind the one URL.*

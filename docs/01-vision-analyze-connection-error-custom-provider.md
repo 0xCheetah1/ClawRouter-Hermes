@@ -149,4 +149,4 @@ that serves a local OpenAI-compatible endpoint and gives you 55+ models — many
 vision-capable — behind it. It's one way to implement Fix 2; the diagnosis above
 stands regardless of which proxy you use.*
 
-*Last reviewed against Hermes Agent v0.15.x.*
+*Last reviewed against Hermes Agent v0.18.x.*

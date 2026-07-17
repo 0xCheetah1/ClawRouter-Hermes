@@ -127,4 +127,4 @@ way to implement the robust setup above. The diagnosis holds regardless of which
 you use; track the upstream fix in
 [hermes-agent#38685](https://github.com/NousResearch/hermes-agent/issues/38685).*
 
-*Last reviewed against Hermes Agent v0.15.x.*
+*Last reviewed against Hermes Agent v0.18.x.*
