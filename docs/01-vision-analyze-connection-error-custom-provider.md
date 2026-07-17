@@ -145,8 +145,8 @@ dominates latency exactly as before.
 
 *If you'd rather not run and maintain your own local proxy, a ready-made option is
 [ClawRouter](https://github.com/BlockRunAI/ClawRouter) — a one-command Hermes plugin
-that serves a local OpenAI-compatible endpoint and gives you 55+ vision-capable
-models behind it. It's one way to implement Fix 2; the diagnosis above stands
-regardless of which proxy you use.*
+that serves a local OpenAI-compatible endpoint and gives you 55+ models — many
+vision-capable — behind it. It's one way to implement Fix 2; the diagnosis above
+stands regardless of which proxy you use.*
 
 *Last reviewed against Hermes Agent v0.15.x.*

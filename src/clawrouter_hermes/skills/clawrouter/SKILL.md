@@ -158,7 +158,7 @@ Rules handle ~80% of requests in <1ms. Only ambiguous queries hit the LLM classi
 
 ## Available Models
 
-55+ models including: gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna, gpt-5.5, gpt-5.4, claude-opus-4.8, claude-opus-4.7, claude-sonnet-5, claude-sonnet-4.6, gemini-3.1-pro, gemini-3.5-flash, deepseek-v4-pro, deepseek-chat, glm-5.2, grok-4.3, grok-build-0.1, kimi-k2.7, minimax-m3, and the curated free models (gpt-oss-120b, gpt-oss-20b, mistral-large-3-675b, qwen3.5-122b-a10b, qwen3-next-80b-a3b-instruct, llama-4-maverick, seed-oss-36b, nemotron-3-nano-omni-30b-a3b-reasoning [vision]).
+55+ models including: claude-fable-5, claude-opus-4.8, claude-opus-4.7, claude-sonnet-5, claude-sonnet-4.6, gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna, gpt-5.5, gpt-5.4, gemini-3.1-pro, gemini-3.5-flash, grok-4.5, grok-4.3, grok-build-0.1, deepseek-v4-pro, deepseek-chat, glm-5.2, kimi-k2.7, minimax-m3, and the curated free models (mistral-large-3-675b, qwen3-next-80b-a3b-instruct, seed-oss-36b, nemotron-3-nano-omni-30b-a3b-reasoning [vision], mistral-nemotron, step-3.7-flash, nemotron-nano-9b-v2, nemotron-nano-12b-v2-vl [vision]).
 
 ## Built-in Agent Tools
 
@@ -181,9 +181,9 @@ Realtime prices and historical OHLC across every asset class. The agent should c
 
 | Tool                        | Purpose                                                                     | Price                |
 | --------------------------- | --------------------------------------------------------------------------- | -------------------- |
-| `blockrun_image_generation` | 8 image models — DALL-E 3, Nano Banana / Pro, Flux, Grok Imagine, CogView-4 | $0.015–$0.15 / image |
+| `blockrun_image_generation` | 8 image models — GPT Image 1/2, Nano Banana / Pro, Seedream 5 Pro, Grok Imagine / Pro, CogView-4 | $0.015–$0.15 / image |
 | `blockrun_image_edit`       | Edit / inpaint existing image (openai/gpt-image-1)                          | $0.02–$0.04 / image  |
-| `blockrun_video_generation` | Grok Imagine + ByteDance Seedance (1.5-pro / 2.0-fast / 2.0), 5–10s         | $0.03–$0.30 / second |
+| `blockrun_video_generation` | Grok Imagine + ByteDance Seedance (1.5-pro / 2.0-fast / 2.0) + Sora 2, 5–10s | $0.03–$0.30 / second |
 
 ### Prediction Markets (Predexon)
 

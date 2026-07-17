@@ -1,6 +1,8 @@
 # hermes-plugin-clawrouter
 
-ClawRouter for [Hermes](https://github.com/NousResearch/hermes-agent) — 55+ LLMs, x402 USDC micropayments, smart routing.
+ClawRouter for [Hermes](https://github.com/NousResearch/hermes-agent) — 55+ LLMs from 9 providers, x402 USDC micropayments, smart routing. One local proxy, one wallet, no API keys.
+
+Current catalog headliners: Claude Fable 5 / Opus 4.8 / Sonnet 5, GPT-5.6 (Terra / Sol / Luna), Gemini 3.1 Pro / 3.5 Flash, Grok 4.5, DeepSeek V4 Pro, GLM-5.2, Kimi K2.7, MiniMax M3 — plus 8 free NVIDIA-hosted models that cost nothing to run. Image, video, and web-search tools bill through the same wallet.
 
 Wraps the existing [ClawRouter](https://github.com/BlockRunAI/ClawRouter) TypeScript proxy as a Hermes plugin. Wallet (BIP-39, Base + Solana), routing (15-dimension scorer), and x402 payment all stay in the canonical TS implementation — this is a thin Python adapter.
 
@@ -52,8 +54,8 @@ In a Hermes chat:
 
 Tools (callable from chat):
 
-- `clawrouter_image_generate` — 55+ models incl. DALL-E 3, Flux, Nano Banana
-- `clawrouter_video_generate` — Seedance, Grok Imagine
+- `clawrouter_image_generate` — 8 image models incl. GPT Image 2, Nano Banana / Pro, Seedream 5 Pro, Grok Imagine, CogView-4
+- `clawrouter_video_generate` — Seedance 1.5/2.0, Grok Imagine, Sora 2
 - `clawrouter_web_search` — Exa-powered
 
 ### Auxiliary vision

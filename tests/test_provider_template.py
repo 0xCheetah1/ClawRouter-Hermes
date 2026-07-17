@@ -81,37 +81,55 @@ def test_curated_picker_catalog_orders_featured_models():
         "blockrun/free",
     ]
     featured_order = [
+        "blockrun/anthropic/claude-fable-5",
         "blockrun/anthropic/claude-opus-4.8",
-        "blockrun/anthropic/claude-opus-4.7",
         "blockrun/anthropic/claude-sonnet-5",
         "blockrun/anthropic/claude-sonnet-4.6",
-        "blockrun/openai/gpt-5.6-sol",
         "blockrun/openai/gpt-5.6-terra",
+        "blockrun/openai/gpt-5.6-sol",
         "blockrun/openai/gpt-5.6-luna",
         "blockrun/openai/gpt-5.5",
-        "blockrun/google/gemini-3.5-flash",
-        "blockrun/deepseek/deepseek-v4-pro",
-        "blockrun/moonshot/kimi-k2.7",
+        "blockrun/google/gemini-3.1-pro",
+        "blockrun/xai/grok-4.5",
         "blockrun/xai/grok-4.3",
         "blockrun/zai/glm-5.2",
         "blockrun/minimax/minimax-m3",
-        "blockrun/free/gpt-oss-120b",
+        "blockrun/moonshot/kimi-k2.7",
+        "blockrun/deepseek/deepseek-v4-pro",
+        "blockrun/free/mistral-large-3-675b",
     ]
     assert [positions[model] for model in featured_order] == sorted(
         positions[model] for model in featured_order
     )
-    assert chat_models[-8:] == [
-        "blockrun/free/gpt-oss-120b",
-        "blockrun/free/gpt-oss-20b",
+    # All per-model free entries sit contiguously at the end of the picker,
+    # and match the live free tier exactly (order mirrors top-models.json,
+    # with post-top-models catalog additions appended).
+    free_tail = [m for m in chat_models if m.startswith("blockrun/free/")]
+    assert chat_models[-len(free_tail):] == free_tail
+    assert free_tail == [
         "blockrun/free/mistral-large-3-675b",
-        "blockrun/free/qwen3.5-122b-a10b",
         "blockrun/free/qwen3-next-80b-a3b-instruct",
-        "blockrun/free/llama-4-maverick",
         "blockrun/free/seed-oss-36b",
         "blockrun/free/nemotron-3-nano-omni-30b-a3b-reasoning",
+        "blockrun/free/mistral-nemotron",
+        "blockrun/free/step-3.7-flash",
+        "blockrun/free/nemotron-nano-9b-v2",
+        "blockrun/free/nemotron-nano-12b-v2-vl",
     ]
-    # Retired model must not reappear in the picker (NVIDIA EOL 2026-06-14).
-    assert "blockrun/free/qwen3-coder-480b" not in chat_models
+    # Retired models must not reappear in the picker. Append here on every
+    # catalog retirement so a bad merge can't resurrect them.
+    retired_models = frozenset({
+        "blockrun/free/qwen3-coder-480b",  # NVIDIA EOL 2026-06-14
+        # Dropped from the live BlockRun catalog by 2026-07-17:
+        "blockrun/xai/grok-4-1-fast-reasoning",
+        "blockrun/xai/grok-4-0709",
+        "blockrun/xai/grok-3",
+        "blockrun/free/gpt-oss-120b",
+        "blockrun/free/gpt-oss-20b",
+        "blockrun/free/qwen3.5-122b-a10b",
+        "blockrun/free/llama-4-maverick",
+    })
+    assert not set(chat_models) & retired_models
 
 
 def test_patch_hermes_model_catalog_uses_curated_clawrouter_only(monkeypatch):

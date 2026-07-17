@@ -6,8 +6,9 @@ IMAGE_GENERATE: dict = {
     "name": "clawrouter_image_generate",
     "description": (
         "Generate an image from a text prompt via ClawRouter. Routes to "
-        "google/nano-banana (default), openai/dall-e-3, openai/gpt-image-1, "
-        "black-forest/flux-1.1-pro, xai/grok-imagine-image, or zai/cogview-4. "
+        "google/nano-banana (default), google/nano-banana-pro, openai/gpt-image-2, "
+        "openai/gpt-image-1, bytedance/seedream-5-pro, xai/grok-imagine-image, "
+        "xai/grok-imagine-image-pro, or zai/cogview-4. "
         "Returns a local proxy URL like http://127.0.0.1:8402/images/<file>.png. "
         "Billed in USDC via x402."
     ),
@@ -22,8 +23,8 @@ IMAGE_GENERATE: dict = {
                 "type": "string",
                 "description": (
                     "Full model ID. Examples: 'google/nano-banana' (default), "
-                    "'openai/dall-e-3', 'openai/gpt-image-1', "
-                    "'black-forest/flux-1.1-pro', 'xai/grok-imagine-image'."
+                    "'openai/gpt-image-2', 'openai/gpt-image-1', "
+                    "'bytedance/seedream-5-pro', 'xai/grok-imagine-image'."
                 ),
             },
             "size": {
@@ -46,7 +47,7 @@ VIDEO_GENERATE: dict = {
     "description": (
         "Generate a 5–10 second video via ClawRouter. Models: "
         "bytedance/seedance-1.5-pro (default, cheapest), bytedance/seedance-2.0-fast, "
-        "bytedance/seedance-2.0, xai/grok-imagine-video. Async — upstream polling "
+        "bytedance/seedance-2.0, xai/grok-imagine-video, azure/sora-2. Async — upstream polling "
         "takes 30–120 seconds. Returns a local proxy URL like "
         "http://127.0.0.1:8402/videos/<file>.mp4. Billed in USDC via x402."
     ),

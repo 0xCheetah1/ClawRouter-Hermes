@@ -68,20 +68,20 @@ catalog. You switch models from the picker — no config edit per switch:
 
 ```
 blockrun/auto                 ← smart routing: best model per request
-openai/gpt-5.5
-anthropic/claude-opus-4.8
-anthropic/claude-sonnet-4.6
-google/gemini-2.5-pro
-deepseek/deepseek-chat
-moonshot/kimi-k2.6
-xai/grok-4-1-fast-reasoning
-minimax/minimax-m3
-…55+ total
+blockrun/anthropic/claude-fable-5
+blockrun/anthropic/claude-opus-4.8
+blockrun/openai/gpt-5.6-terra
+blockrun/google/gemini-3.1-pro
+blockrun/xai/grok-4.5
+blockrun/minimax/minimax-m3
+blockrun/moonshot/kimi-k2.7
+blockrun/deepseek/deepseek-v4-pro
+…44 curated entries (55+ models via the gateway)
 ```
 
 Set the model to `blockrun/auto` and the gateway's router picks a model per request
-on a quality/cost curve; or pin a specific model like `anthropic/claude-sonnet-4.6`
-when you want determinism.
+on a quality/cost curve; or pin a specific model like
+`blockrun/anthropic/claude-sonnet-4.6` when you want determinism.
 
 ### Why this also fixes the broken paths
 
@@ -145,8 +145,9 @@ auxiliary:
 ## FAQ
 
 **Can I still pin a specific model?**
-Yes. Pick any catalog entry (e.g. `openai/gpt-5.5`, `anthropic/claude-sonnet-4.6`)
-from `/model`, or pass `-m <model>` on the CLI. `blockrun/auto` is opt-in.
+Yes. Pick any catalog entry (e.g. `blockrun/openai/gpt-5.5`,
+`blockrun/anthropic/claude-sonnet-4.6`) from `/model`, or pass `-m <model>` on the
+CLI. `blockrun/auto` is opt-in.
 
 **Does one gateway become a single point of failure?**
 The plugin runs a local supervisor with a heartbeat that restarts the proxy on

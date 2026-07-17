@@ -128,11 +128,11 @@ def test_patch_relabels_active_plugin_telegram_adapter(monkeypatch):
     _patch_telegram_model_labels()
     assert adapter_cls._clawrouter_labels_patched is True
 
-    models = ["blockrun/free/gpt-oss-120b", "blockrun/openai/gpt-5.6-sol"]
+    models = ["blockrun/free/mistral-nemotron", "blockrun/openai/gpt-5.6-sol"]
     markup, _page_info = adapter_cls._build_model_keyboard(adapter_cls(), models, 0)
 
     free_btn, paid_btn = markup.inline_keyboard[0]
-    assert free_btn.text == "[FREE] gpt-oss-120b"
+    assert free_btn.text == "[FREE] mistral-nemotron"
     assert free_btn.callback_data == "mm:0"
     assert paid_btn.text == "gpt-5.6-sol"
     assert paid_btn.callback_data == "mm:1"
