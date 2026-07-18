@@ -21,6 +21,11 @@ from typing import Iterable, List, Tuple
 
 from . import models, proxy_supervisor, state, tools, wallet
 
+#: Distribution name as declared in ``pyproject.toml``. Kept as a constant so
+#: tests can assert it still matches, since a typo would silently degrade
+#: ``--version`` to the source fallback rather than raise.
+_DIST_NAME = "hermes-plugin-clawrouter"
+
 
 def _hermes_home() -> Path:
     """Mirror ``hermes_constants.get_hermes_home`` — honor ``HERMES_HOME``.
@@ -534,13 +539,17 @@ def _stats(_: argparse.Namespace) -> None:
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="hermes-clawrouter")
     try:
-        version = metadata.version("hermes-plugin-clawrouter")
+        version = metadata.version(_DIST_NAME)
     except metadata.PackageNotFoundError:
-        version = "unknown"
+        # Running from a source checkout with nothing installed. Imported here
+        # rather than at module scope because ``__init__`` imports this module.
+        from . import _VERSION
+
+        version = _VERSION
     parser.add_argument(
         "--version",
         action="version",
-        version=f"hermes-plugin-clawrouter {version}",
+        version=f"{_DIST_NAME} {version}",
     )
     register_cli(parser)
     args = parser.parse_args(argv)
