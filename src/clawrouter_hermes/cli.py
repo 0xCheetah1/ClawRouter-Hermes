@@ -15,7 +15,7 @@ import os
 import shutil
 import subprocess
 import sys
-from importlib import resources
+from importlib import metadata, resources
 from pathlib import Path
 from typing import Iterable, List, Tuple
 
@@ -533,6 +533,15 @@ def _stats(_: argparse.Namespace) -> None:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="hermes-clawrouter")
+    try:
+        version = metadata.version("hermes-plugin-clawrouter")
+    except metadata.PackageNotFoundError:
+        version = "unknown"
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"hermes-plugin-clawrouter {version}",
+    )
     register_cli(parser)
     args = parser.parse_args(argv)
     clawrouter_command(args)

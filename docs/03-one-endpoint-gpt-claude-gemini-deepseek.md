@@ -74,7 +74,7 @@ blockrun/openai/gpt-5.6-terra
 blockrun/google/gemini-3.1-pro
 blockrun/xai/grok-4.5
 blockrun/minimax/minimax-m3
-blockrun/moonshot/kimi-k2.7
+blockrun/moonshot/kimi-k3
 blockrun/deepseek/deepseek-v4-pro
 …44 curated entries (55+ models via the gateway)
 ```
