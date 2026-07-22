@@ -76,7 +76,7 @@ blockrun/xai/grok-4.5
 blockrun/minimax/minimax-m3
 blockrun/moonshot/kimi-k3
 blockrun/deepseek/deepseek-v4-pro
-…44 curated entries (55+ models via the gateway)
+…46 curated entries (55+ models via the gateway)
 ```
 
 Set the model to `blockrun/auto` and the gateway's router picks a model per request
