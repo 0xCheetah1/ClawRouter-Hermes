@@ -292,6 +292,38 @@ run_clawrouter_cli() {
   fi
 }
 
+sync_user_cli_launcher() {
+  local py="$1"
+  local bin_dir cli user_bin launcher backup target
+  bin_dir="$(dirname "$py")"
+  cli="$bin_dir/hermes-clawrouter"
+  [[ -x "$cli" ]] || return 0
+
+  user_bin="$HOME/.local/bin"
+  launcher="$user_bin/hermes-clawrouter"
+  mkdir -p "$user_bin"
+
+  if [[ -L "$launcher" ]]; then
+    target="$(readlink "$launcher" 2>/dev/null || true)"
+    if [[ "$target" != "$cli" ]]; then
+      backup="$launcher.bak.$(date +%Y%m%d%H%M%S)"
+      mv "$launcher" "$backup"
+      warn "Moved old hermes-clawrouter launcher to $backup"
+    fi
+  elif [[ -e "$launcher" ]] && ! grep -Fq "exec \"$cli\"" "$launcher" 2>/dev/null; then
+    backup="$launcher.bak.$(date +%Y%m%d%H%M%S)"
+    mv "$launcher" "$backup"
+    warn "Moved old hermes-clawrouter launcher to $backup"
+  fi
+
+  cat > "$launcher" <<EOF
+#!/usr/bin/env sh
+exec "$cli" "\$@"
+EOF
+  chmod +x "$launcher"
+  log "Updated user launcher: $launcher -> $cli"
+}
+
 enable_plugin_in_config() {
   local py="$1"
   "$py" - "$PLUGIN_NAME" <<'PY'
@@ -365,6 +397,7 @@ install_into_venv() {
     warn "pip failed to install $PKG_SPEC into $py."
     return 1
   fi
+  sync_user_cli_launcher "$py"
   ensure_node_tooling || warn "Node/npm/npx not available; setup will still run, but ClawRouter proxy install may be deferred or fail."
   enable_plugin "$py"
   if ! run_clawrouter_cli "$py" setup --force; then
