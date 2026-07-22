@@ -95,6 +95,7 @@ def test_curated_picker_catalog_orders_featured_models():
         "blockrun/zai/glm-5.2",
         "blockrun/minimax/minimax-m3",
         "blockrun/moonshot/kimi-k3",
+        "blockrun/qwen/qwen3.7-max",
         "blockrun/deepseek/deepseek-v4-pro",
         "blockrun/free/mistral-large-3-675b",
     ]
