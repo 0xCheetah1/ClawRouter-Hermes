@@ -43,6 +43,7 @@ CHAT_MODELS = (
     "blockrun/minimax/minimax-m3",
     "blockrun/minimax/minimax-m2.7",
     "blockrun/moonshot/kimi-k3",
+    "blockrun/qwen/qwen3.7-max",
     "blockrun/deepseek/deepseek-v4-pro",
     "blockrun/deepseek/deepseek-chat",
     "blockrun/deepseek/deepseek-reasoner",
