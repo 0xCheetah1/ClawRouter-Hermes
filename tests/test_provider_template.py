@@ -82,6 +82,7 @@ def test_curated_picker_catalog_orders_featured_models():
     ]
     featured_order = [
         "blockrun/anthropic/claude-fable-5",
+        "blockrun/anthropic/claude-opus-5",
         "blockrun/anthropic/claude-opus-4.8",
         "blockrun/anthropic/claude-sonnet-5",
         "blockrun/anthropic/claude-sonnet-4.6",
