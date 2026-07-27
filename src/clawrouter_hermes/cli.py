@@ -27,6 +27,23 @@ from . import models, proxy_supervisor, state, tools, wallet
 _DIST_NAME = "hermes-plugin-clawrouter"
 
 
+def _package_version() -> str:
+    """Installed distribution version, falling back to the in-source value.
+
+    A source checkout with nothing installed still gets a real version instead
+    of raising, which matters because this feeds both ``--version`` and the
+    version stamp written into the materialized provider plugin.
+    """
+    try:
+        return metadata.version(_DIST_NAME)
+    except metadata.PackageNotFoundError:
+        # Imported here rather than at module scope because ``__init__``
+        # imports this module.
+        from . import _VERSION
+
+        return _VERSION
+
+
 def _hermes_home() -> Path:
     """Mirror ``hermes_constants.get_hermes_home`` — honor ``HERMES_HOME``.
 
@@ -130,8 +147,16 @@ def _setup(args: argparse.Namespace) -> None:
     print("== ClawRouter for Hermes — setup ==")
 
     if _provider_plugin_dir().exists() and not args.force:
-        print(f"✓ Model-provider plugin already at {_provider_plugin_dir()}")
-        print("  Re-run with --force to overwrite.")
+        if _provider_plugin_is_stale():
+            stale_version = _materialized_plugin_version()
+            _materialize_provider_plugin(force=False)
+            print(
+                f"✓ Refreshed model-provider plugin at {_provider_plugin_dir()} "
+                f"({stale_version or 'unstamped'} → {_package_version()})"
+            )
+        else:
+            print(f"✓ Model-provider plugin already at {_provider_plugin_dir()}")
+            print("  Re-run with --force to overwrite.")
     else:
         _materialize_provider_plugin(force=args.force)
         print(f"✓ Wrote model-provider plugin to {_provider_plugin_dir()}")
@@ -177,6 +202,53 @@ def _setup(args: argparse.Namespace) -> None:
     print("  hermes --provider clawrouter -m blockrun/auto")
 
 
+def _stamp_plugin_version(text: str, version: str) -> str:
+    """Rewrite plugin.yaml's ``version:`` line with the version that wrote it.
+
+    The template ships a placeholder; the materialized copy carries the real
+    package version so ``_provider_plugin_is_stale`` can tell an upgraded
+    install from a current one.
+    """
+    lines = text.splitlines(keepends=True)
+    for idx, line in enumerate(lines):
+        if line.startswith("version:"):
+            newline = "\n" if line.endswith("\n") else ""
+            lines[idx] = f"version: {version}{newline}"
+            return "".join(lines)
+    return text
+
+
+def _materialized_plugin_version() -> str | None:
+    """Version stamped into the materialized plugin.yaml.
+
+    ``None`` when the plugin is absent, half-written, or predates stamping.
+    """
+    plugin_dir = _provider_plugin_dir()
+    if not (plugin_dir / "__init__.py").is_file():
+        return None
+    try:
+        text = (plugin_dir / "plugin.yaml").read_text(encoding="utf-8")
+    except OSError:
+        return None
+    for line in text.splitlines():
+        if line.startswith("version:"):
+            return line.split(":", 1)[1].strip() or None
+    return None
+
+
+def _provider_plugin_is_stale() -> bool:
+    """True when the materialized plugin was written by a different version.
+
+    Catalog additions ship inside ``init.py.tmpl``'s ``_STATIC_FALLBACKS``.
+    Without this check, ``pip install -U`` left the old copy in place and new
+    models never reached the picker unless the user happened to re-run
+    ``setup --force`` — the exact failure mode new-model releases exist to fix.
+    """
+    if not _provider_plugin_dir().exists():
+        return False
+    return _materialized_plugin_version() != _package_version()
+
+
 def _materialize_provider_plugin(*, force: bool) -> None:
     _provider_plugin_dir().parent.mkdir(parents=True, exist_ok=True)
     if _provider_plugin_dir().exists() and force:
@@ -198,6 +270,8 @@ def _materialize_provider_plugin(*, force: bool) -> None:
                 f"Provider template missing: {src_name} ({exc}). "
                 "This indicates a broken package install."
             ) from exc
+        if dst_name == "plugin.yaml":
+            data = _stamp_plugin_version(data, _package_version())
         (_provider_plugin_dir() / dst_name).write_text(data, encoding="utf-8")
 
 
@@ -334,6 +408,11 @@ def install_hermes_compat(*, force_provider: bool = False, set_default: bool = F
     """Best-effort one-shot install for Hermes plugin/provider integration."""
     if force_provider or not _provider_plugin_dir().exists():
         _materialize_provider_plugin(force=force_provider)
+    elif _provider_plugin_is_stale():
+        # Refresh in place after an upgrade. Deliberately not a forced
+        # (rmtree) rewrite: this runs unattended at plugin registration, so it
+        # only overwrites the two files we own and leaves anything else alone.
+        _materialize_provider_plugin(force=False)
     _ensure_local_api_key()
     _configure_hermes_provider(set_default_force=set_default)
 
@@ -538,18 +617,10 @@ def _stats(_: argparse.Namespace) -> None:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="hermes-clawrouter")
-    try:
-        version = metadata.version(_DIST_NAME)
-    except metadata.PackageNotFoundError:
-        # Running from a source checkout with nothing installed. Imported here
-        # rather than at module scope because ``__init__`` imports this module.
-        from . import _VERSION
-
-        version = _VERSION
     parser.add_argument(
         "--version",
         action="version",
-        version=f"{_DIST_NAME} {version}",
+        version=f"{_DIST_NAME} {_package_version()}",
     )
     register_cli(parser)
     args = parser.parse_args(argv)
