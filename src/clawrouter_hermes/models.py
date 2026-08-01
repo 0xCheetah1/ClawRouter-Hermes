@@ -46,6 +46,7 @@ CHAT_MODELS = (
     "blockrun/moonshot/kimi-k3",
     "blockrun/qwen/qwen3.7-max",
     "blockrun/deepseek/deepseek-v4-pro",
+    "blockrun/deepseek/deepseek-v4-flash",
     "blockrun/deepseek/deepseek-chat",
     "blockrun/deepseek/deepseek-reasoner",
     "blockrun/free/mistral-large-3-675b",
