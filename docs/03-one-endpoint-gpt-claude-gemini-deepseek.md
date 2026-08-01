@@ -77,7 +77,7 @@ blockrun/minimax/minimax-m3
 blockrun/moonshot/kimi-k3
 blockrun/deepseek/deepseek-v4-pro
 blockrun/deepseek/deepseek-v4-flash
-…47 curated entries (<!-- br:models.chatVisible -->67<!-- /br:models.chatVisible --> models via the gateway)
+…47 curated entries (<!-- br:models.chatVisible -->66<!-- /br:models.chatVisible --> models via the gateway)
 ```
 
 Set the model to `blockrun/auto` and the gateway's router picks a model per request
