@@ -32,8 +32,8 @@ FEATURED_MODELS = (
     "blockrun/moonshot/kimi-k3",
     "blockrun/qwen/qwen3.7-max",
     "blockrun/deepseek/deepseek-v4-pro",
-    "blockrun/free/mistral-large-3-675b",
     "blockrun/free/deepseek-v4-flash",
+    "blockrun/free/mistral-large-3-675b",
 )
 
 
@@ -127,6 +127,7 @@ def test_curated_picker_catalog_contains_free_models():
     chat_models = models.chat_models()
     free_models = [model for model in chat_models if models.is_free_model(model)]
     assert "blockrun/free" in free_models
+    assert "blockrun/free/deepseek-v4-flash" in free_models
     assert any(model.startswith("blockrun/free/") for model in free_models)
 
 
@@ -149,10 +150,12 @@ def test_curated_picker_catalog_orders_featured_models():
     # and match the live free tier exactly (order mirrors top-models.json,
     # with post-top-models catalog additions appended).
     free_tail = [m for m in chat_models if m.startswith("blockrun/free/")]
-    assert chat_models[-len(free_tail):] == free_tail
+    assert chat_models[-(len(free_tail) - 1):] == [
+        model for model in free_tail if model != "blockrun/free/deepseek-v4-flash"
+    ]
     assert free_tail == [
-        "blockrun/free/mistral-large-3-675b",
         "blockrun/free/deepseek-v4-flash",
+        "blockrun/free/mistral-large-3-675b",
         "blockrun/free/seed-oss-36b",
         "blockrun/free/nemotron-3-nano-omni-30b-a3b-reasoning",
         "blockrun/free/mistral-nemotron",
@@ -165,9 +168,7 @@ def test_curated_picker_catalog_orders_featured_models():
     # catalog retirement so a bad merge can't resurrect them.
     retired_models = frozenset({
         "blockrun/free/qwen3-coder-480b",  # NVIDIA EOL 2026-06-14
-        # Never a real SKU: the gateway removed paid V4 Flash and kept only a
-        # legacy alias to deepseek/deepseek-chat, so this ID smoke-tests green
-        # while duplicating deepseek-chat. The free model is free/deepseek-v4-flash.
+        # Never a real SKU: keep the free route ID in the DeepSeek group instead.
         "blockrun/deepseek/deepseek-v4-flash",
         # Dropped from the live BlockRun catalog by 2026-07-17:
         "blockrun/xai/grok-4-1-fast-reasoning",
