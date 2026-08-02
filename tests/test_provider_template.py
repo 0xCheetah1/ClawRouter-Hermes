@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 import importlib.resources as resources
+import json
 import sys
 import types
 from pathlib import Path
@@ -31,8 +32,8 @@ FEATURED_MODELS = (
     "blockrun/moonshot/kimi-k3",
     "blockrun/qwen/qwen3.7-max",
     "blockrun/deepseek/deepseek-v4-pro",
-    "blockrun/deepseek/deepseek-v4-flash",
     "blockrun/free/mistral-large-3-675b",
+    "blockrun/free/deepseek-v4-flash",
 )
 
 
@@ -151,18 +152,23 @@ def test_curated_picker_catalog_orders_featured_models():
     assert chat_models[-len(free_tail):] == free_tail
     assert free_tail == [
         "blockrun/free/mistral-large-3-675b",
-        "blockrun/free/qwen3-next-80b-a3b-instruct",
+        "blockrun/free/deepseek-v4-flash",
         "blockrun/free/seed-oss-36b",
         "blockrun/free/nemotron-3-nano-omni-30b-a3b-reasoning",
         "blockrun/free/mistral-nemotron",
         "blockrun/free/step-3.7-flash",
         "blockrun/free/nemotron-nano-9b-v2",
         "blockrun/free/nemotron-nano-12b-v2-vl",
+        "blockrun/free/qwen3-next-80b-a3b-instruct",
     ]
     # Retired models must not reappear in the picker. Append here on every
     # catalog retirement so a bad merge can't resurrect them.
     retired_models = frozenset({
         "blockrun/free/qwen3-coder-480b",  # NVIDIA EOL 2026-06-14
+        # Never a real SKU: the gateway removed paid V4 Flash and kept only a
+        # legacy alias to deepseek/deepseek-chat, so this ID smoke-tests green
+        # while duplicating deepseek-chat. The free model is free/deepseek-v4-flash.
+        "blockrun/deepseek/deepseek-v4-flash",
         # Dropped from the live BlockRun catalog by 2026-07-17:
         "blockrun/xai/grok-4-1-fast-reasoning",
         "blockrun/xai/grok-4-0709",
@@ -173,6 +179,45 @@ def test_curated_picker_catalog_orders_featured_models():
         "blockrun/free/llama-4-maverick",
     })
     assert not set(chat_models) & retired_models
+
+
+#: Curated entries that postdate the ClawRouter top-models.json snapshot.
+#: They are appended after the mirrored free tail rather than interleaved.
+POST_TOP_MODELS_ADDITIONS = frozenset({
+    "blockrun/free/qwen3-next-80b-a3b-instruct",
+})
+
+
+def test_curated_picker_catalog_mirrors_clawrouter_top_models():
+    """Membership + relative order must match ClawRouter's top-models.json.
+
+    The gateway's MODEL_ALIASES table makes phantom IDs smoke-test green:
+    blockrun/deepseek/deepseek-v4-flash returned HTTP 200 via a legacy alias
+    to deepseek-chat while never being a real SKU (PR #27). Catalog membership
+    therefore has to be validated against top-models.json, not the wire.
+    Runs only where a sibling ClawRouter checkout exists; CI skips.
+    """
+    top_models_path = (
+        _repo_root().parent / "ClawRouter" / "src" / "top-models.json"
+    )
+    if not top_models_path.is_file():
+        pytest.skip("sibling ClawRouter checkout not available")
+    top_models = json.loads(top_models_path.read_text(encoding="utf-8"))
+
+    from clawrouter_hermes import models
+
+    mirrored = [
+        model.removeprefix("blockrun/")
+        for model in models.chat_models()
+        if model not in POST_TOP_MODELS_ADDITIONS
+    ]
+    unknown = [model for model in mirrored if model not in top_models]
+    assert not unknown, f"curated IDs missing from top-models.json: {unknown}"
+    positions = {model: idx for idx, model in enumerate(top_models)}
+    order = [positions[model] for model in mirrored]
+    assert order == sorted(order), (
+        "curated order diverges from top-models.json"
+    )
 
 
 def test_patch_hermes_model_catalog_uses_curated_clawrouter_only(monkeypatch):

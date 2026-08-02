@@ -76,7 +76,7 @@ blockrun/xai/grok-4.5
 blockrun/minimax/minimax-m3
 blockrun/moonshot/kimi-k3
 blockrun/deepseek/deepseek-v4-pro
-blockrun/deepseek/deepseek-v4-flash
+blockrun/free/deepseek-v4-flash
 …47 curated entries (<!-- br:models.chatVisible -->66<!-- /br:models.chatVisible --> models via the gateway)
 ```
 
