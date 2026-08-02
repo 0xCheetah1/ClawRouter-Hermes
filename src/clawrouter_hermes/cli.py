@@ -2,6 +2,7 @@
 
 Subcommands:
   - setup    materialize the model-provider plugin, verify Node + wallet
+  - update   upgrade this package, then refresh setup-managed files
   - wallet   print wallet address + USDC balances
   - doctor   pass/fail health check
   - route    show/set routing profile
@@ -102,6 +103,12 @@ def register_cli(subparser: argparse.ArgumentParser) -> None:
     )
     setup_p.set_defaults(func=_setup)
 
+    update_p = subs.add_parser(
+        "update",
+        help="Upgrade hermes-plugin-clawrouter and refresh setup-managed files",
+    )
+    update_p.set_defaults(func=_update)
+
     wallet_p = subs.add_parser("wallet", help="Show wallet address + USDC balances")
     wallet_p.add_argument("--json", action="store_true", help="Emit JSON instead of text")
     wallet_p.set_defaults(func=_wallet)
@@ -138,7 +145,7 @@ def clawrouter_command(args: argparse.Namespace) -> None:
 
 def _default_help(_: argparse.Namespace) -> None:
     print(
-        "Usage: hermes-clawrouter <setup|wallet|doctor|route|stats>\n\n"
+        "Usage: hermes-clawrouter <setup|update|wallet|doctor|route|stats>\n\n"
         "Run `hermes-clawrouter <sub> --help` for details.",
     )
 
@@ -200,6 +207,32 @@ def _setup(args: argparse.Namespace) -> None:
     print()
     print("Next: restart any running Hermes gateway, then choose ClawRouter in /model or run:")
     print("  hermes --provider clawrouter -m blockrun/auto")
+
+
+def _update(_: argparse.Namespace) -> None:
+    """Upgrade this plugin package and refresh the generated Hermes wiring."""
+    print("== ClawRouter for Hermes — update ==", flush=True)
+    print(f"Current {_DIST_NAME}: {_package_version()}", flush=True)
+
+    pip_cmd = [sys.executable, "-m", "pip", "install", "--upgrade", _DIST_NAME]
+    print(f"Updating {_DIST_NAME}…", flush=True)
+    pip_result = subprocess.run(pip_cmd)
+    if pip_result.returncode != 0:
+        print(f"✗ pip upgrade failed with exit code {pip_result.returncode}")
+        sys.exit(pip_result.returncode)
+
+    print("Refreshing Hermes integration…", flush=True)
+    setup_cmd = [
+        sys.executable,
+        "-c",
+        "from clawrouter_hermes.cli import main; main(['setup'])",
+    ]
+    setup_result = subprocess.run(setup_cmd)
+    if setup_result.returncode != 0:
+        print(f"✗ setup refresh failed with exit code {setup_result.returncode}")
+        sys.exit(setup_result.returncode)
+
+    print("Update complete. Restart any running Hermes gateway to load refreshed code.")
 
 
 def _stamp_plugin_version(text: str, version: str) -> str:
