@@ -33,7 +33,6 @@ FEATURED_MODELS = (
     "blockrun/qwen/qwen3.7-max",
     "blockrun/deepseek/deepseek-v4-pro",
     "blockrun/free/deepseek-v4-flash",
-    "blockrun/free/mistral-large-3-675b",
 )
 
 
@@ -155,7 +154,6 @@ def test_curated_picker_catalog_orders_featured_models():
     ]
     assert free_tail == [
         "blockrun/free/deepseek-v4-flash",
-        "blockrun/free/mistral-large-3-675b",
         "blockrun/free/seed-oss-36b",
         "blockrun/free/nemotron-3-nano-omni-30b-a3b-reasoning",
         "blockrun/free/mistral-nemotron",
@@ -168,6 +166,10 @@ def test_curated_picker_catalog_orders_featured_models():
     # catalog retirement so a bad merge can't resurrect them.
     retired_models = frozenset({
         "blockrun/free/qwen3-coder-480b",  # NVIDIA EOL 2026-06-14
+        # EOL'd for good in blockrun's 2026-07-28 free re-probe (ClawRouter
+        # v0.12.239 dropped it from top-models.json); alias pins keep the id
+        # routable at the gateway but it leaves user-facing surfaces.
+        "blockrun/free/mistral-large-3-675b",
         # Never a real SKU: keep the free route ID in the DeepSeek group instead.
         "blockrun/deepseek/deepseek-v4-flash",
         # Dropped from the live BlockRun catalog by 2026-07-17:
@@ -186,6 +188,13 @@ def test_curated_picker_catalog_orders_featured_models():
 #: They are appended after the mirrored free tail rather than interleaved.
 POST_TOP_MODELS_ADDITIONS = frozenset({
     "blockrun/free/qwen3-next-80b-a3b-instruct",
+})
+
+#: Entries whose picker placement deliberately diverges from top-models.json
+#: order; membership is still enforced. PR #28 groups the free DeepSeek V4
+#: Flash route with the paid DeepSeek models instead of the free tail.
+CURATED_PLACEMENT_OVERRIDES = frozenset({
+    "blockrun/free/deepseek-v4-flash",
 })
 
 
@@ -215,7 +224,11 @@ def test_curated_picker_catalog_mirrors_clawrouter_top_models():
     unknown = [model for model in mirrored if model not in top_models]
     assert not unknown, f"curated IDs missing from top-models.json: {unknown}"
     positions = {model: idx for idx, model in enumerate(top_models)}
-    order = [positions[model] for model in mirrored]
+    order = [
+        positions[model]
+        for model in mirrored
+        if "blockrun/" + model not in CURATED_PLACEMENT_OVERRIDES
+    ]
     assert order == sorted(order), (
         "curated order diverges from top-models.json"
     )

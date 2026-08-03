@@ -49,7 +49,6 @@ CHAT_MODELS = (
     "blockrun/free/deepseek-v4-flash",
     "blockrun/deepseek/deepseek-chat",
     "blockrun/deepseek/deepseek-reasoner",
-    "blockrun/free/mistral-large-3-675b",
     "blockrun/free/seed-oss-36b",
     "blockrun/free/nemotron-3-nano-omni-30b-a3b-reasoning",
     "blockrun/free/mistral-nemotron",
