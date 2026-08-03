@@ -1,8 +1,8 @@
 # hermes-plugin-clawrouter
 
-ClawRouter for [Hermes](https://github.com/NousResearch/hermes-agent) — <!-- br:models.chatVisible -->66<!-- /br:models.chatVisible --> LLMs from 9 providers, x402 USDC micropayments, smart routing. One local proxy, one wallet, no API keys.
+ClawRouter for [Hermes](https://github.com/NousResearch/hermes-agent) — <!-- br:models.chatVisible -->71<!-- /br:models.chatVisible --> LLMs from 12 providers, x402 USDC micropayments, smart routing. One local proxy, one wallet, no API keys.
 
-Current catalog headliners: Claude Fable 5 / Opus 4.8 / Sonnet 5, GPT-5.6 (Terra / Sol / Luna), Gemini 3.1 Pro / 3.5 Flash, Grok 4.5, DeepSeek V4 Pro, GLM-5.2, Kimi K2.7, MiniMax M3 — plus 8 free NVIDIA-hosted models that cost nothing to run. Image, video, and web-search tools bill through the same wallet.
+Current catalog headliners: Claude Fable 5 / Opus 5 / Sonnet 5, GPT-5.6 (Terra / Sol / Luna), Gemini 3.1 Pro / 3.6 Flash, Grok 4.5, DeepSeek V4 Pro, GLM-5.2, Kimi K3, Qwen3.7 Max, MiniMax M3 — plus <!-- br:models.free -->6<!-- /br:models.free --> free NVIDIA-hosted models that cost nothing to run. Image, video, and web-search tools bill through the same wallet.
 
 Wraps the existing [ClawRouter](https://github.com/BlockRunAI/ClawRouter) TypeScript proxy as a Hermes plugin. Wallet (BIP-39, Base + Solana), routing (15-dimension scorer), and x402 payment all stay in the canonical TS implementation — this is a thin Python adapter.
 
