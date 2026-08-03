@@ -11,6 +11,7 @@ Subcommands:
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import shutil
@@ -214,7 +215,19 @@ def _update(_: argparse.Namespace) -> None:
     print("== ClawRouter for Hermes — update ==", flush=True)
     print(f"Current {_DIST_NAME}: {_package_version()}", flush=True)
 
-    pip_cmd = [sys.executable, "-m", "pip", "install", "--upgrade", _DIST_NAME]
+    if importlib.util.find_spec("pip") is None:
+        # uv-created venvs ship without pip, and pipx's shared pip can break.
+        print(f"✗ pip is not available in this environment ({sys.executable}).")
+        print("  If Hermes was installed with the one-command installer, run:")
+        print("    ~/.hermes/hermes-agent/venv/bin/hermes-clawrouter update")
+        print("  Otherwise upgrade with your environment's tooling, e.g.:")
+        print(f"    uv pip install --upgrade {_DIST_NAME}")
+        sys.exit(1)
+
+    # -I (isolated mode) keeps child interpreters from importing a shadowing
+    # package from the invoking CWD or PYTHONPATH — `python -c`/`-m` otherwise
+    # put the CWD first on sys.path.
+    pip_cmd = [sys.executable, "-I", "-m", "pip", "install", "--upgrade", "--no-input", _DIST_NAME]
     print(f"Updating {_DIST_NAME}…", flush=True)
     pip_result = subprocess.run(pip_cmd)
     if pip_result.returncode != 0:
@@ -222,8 +235,11 @@ def _update(_: argparse.Namespace) -> None:
         sys.exit(pip_result.returncode)
 
     print("Refreshing Hermes integration…", flush=True)
+    # Run setup in a fresh interpreter so it executes the just-upgraded
+    # package, not the stale module already imported into this process.
     setup_cmd = [
         sys.executable,
+        "-I",
         "-c",
         "from clawrouter_hermes.cli import main; main(['setup'])",
     ]

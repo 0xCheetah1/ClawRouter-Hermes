@@ -60,14 +60,17 @@ def test_update_upgrades_package_then_runs_setup(monkeypatch, capsys):
     assert calls == [
         [
             "/venv/bin/python",
+            "-I",
             "-m",
             "pip",
             "install",
             "--upgrade",
+            "--no-input",
             "hermes-plugin-clawrouter",
         ],
         [
             "/venv/bin/python",
+            "-I",
             "-c",
             "from clawrouter_hermes.cli import main; main(['setup'])",
         ],
@@ -93,3 +96,44 @@ def test_update_exits_when_package_upgrade_fails(monkeypatch, capsys):
     assert exc.value.code == 7
     assert len(calls) == 1
     assert "pip upgrade failed with exit code 7" in capsys.readouterr().out
+
+
+def test_update_exits_when_setup_refresh_fails(monkeypatch, capsys):
+    calls = []
+
+    def fake_run(cmd):
+        calls.append(cmd)
+        return SimpleNamespace(returncode=0 if len(calls) == 1 else 5)
+
+    monkeypatch.setattr(cli.subprocess, "run", fake_run)
+    monkeypatch.setattr(cli.sys, "executable", "/venv/bin/python")
+    monkeypatch.setattr(cli, "_package_version", lambda: "0.3.17")
+
+    with pytest.raises(SystemExit) as exc:
+        cli._update(Namespace())
+
+    assert exc.value.code == 5
+    assert len(calls) == 2
+    assert "setup refresh failed with exit code 5" in capsys.readouterr().out
+
+
+def test_update_exits_when_pip_is_missing(monkeypatch, capsys):
+    calls = []
+    monkeypatch.setattr(cli.importlib.util, "find_spec", lambda name: None)
+    monkeypatch.setattr(cli.subprocess, "run", lambda cmd: calls.append(cmd))
+
+    with pytest.raises(SystemExit) as exc:
+        cli._update(Namespace())
+
+    assert exc.value.code == 1
+    assert calls == []
+    assert "pip is not available" in capsys.readouterr().out
+
+
+def test_main_dispatches_update(monkeypatch):
+    called = []
+    monkeypatch.setattr(cli, "_update", lambda args: called.append(args))
+
+    cli.main(["update"])
+
+    assert len(called) == 1
