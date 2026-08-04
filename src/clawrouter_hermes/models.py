@@ -55,7 +55,6 @@ CHAT_MODELS = (
     "blockrun/free/step-3.7-flash",
     "blockrun/free/nemotron-nano-9b-v2",
     "blockrun/free/nemotron-nano-12b-v2-vl",
-    "blockrun/free/qwen3-next-80b-a3b-instruct",
 )
 
 def chat_models() -> list[str]:

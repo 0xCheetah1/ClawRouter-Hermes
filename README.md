@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/BlockRunAI/ClawRouter/main/assets/banner.png" alt="ClawRouter" width="600">
+<img src="https://raw.githubusercontent.com/BlockRunAI/ClawRouter-Hermes/main/assets/banner.png" alt="ClawRouter for Hermes" width="600">
 
 <h1>ClawRouter for Hermes</h1>
 
@@ -127,7 +127,7 @@ The `/model` picker carries a curated, provider-grouped slice of the catalog (sm
 | **DeepSeek**      | deepseek-v4-pro · deepseek-chat · deepseek-reasoner                                                 |
 | **Z.ai**          | glm-5.2 · glm-5.1 · glm-5-turbo · glm-5                                                             |
 | **Moonshot / Qwen / MiniMax** | kimi-k3 · qwen3.7-max · minimax-m3 · minimax-m2.7                                       |
-| **Free**          | deepseek-v4-flash (1M ctx) · mistral-nemotron · seed-oss-36b · step-3.7-flash · qwen3-next-80b · nemotron-3-nano-omni (vision) · nemotron-nano-9b-v2 · nemotron-nano-12b-v2-vl (vision) |
+| **Free**          | deepseek-v4-flash (1M ctx) · mistral-nemotron · seed-oss-36b · step-3.7-flash · nemotron-3-nano-omni (vision) · nemotron-nano-9b-v2 · nemotron-nano-12b-v2-vl (vision) |
 
 ### Routing profiles
 

@@ -160,7 +160,6 @@ def test_curated_picker_catalog_orders_featured_models():
         "blockrun/free/step-3.7-flash",
         "blockrun/free/nemotron-nano-9b-v2",
         "blockrun/free/nemotron-nano-12b-v2-vl",
-        "blockrun/free/qwen3-next-80b-a3b-instruct",
     ]
     # Retired models must not reappear in the picker. Append here on every
     # catalog retirement so a bad merge can't resurrect them.
@@ -180,15 +179,18 @@ def test_curated_picker_catalog_orders_featured_models():
         "blockrun/free/gpt-oss-20b",
         "blockrun/free/qwen3.5-122b-a10b",
         "blockrun/free/llama-4-maverick",
+        # Died in blockrun's 2026-07-17 re-probe: hidden upstream and
+        # server-redirected to gpt-oss-120b, so a picker entry would silently
+        # defeat /exclude. ClawRouter's top-models.test.ts asserts the same.
+        "blockrun/free/qwen3-next-80b-a3b-instruct",
     })
     assert not set(chat_models) & retired_models
 
 
 #: Curated entries that postdate the ClawRouter top-models.json snapshot.
 #: They are appended after the mirrored free tail rather than interleaved.
-POST_TOP_MODELS_ADDITIONS = frozenset({
-    "blockrun/free/qwen3-next-80b-a3b-instruct",
-})
+#: Empty since 2026-08-03 — the picker mirrors top-models.json exactly.
+POST_TOP_MODELS_ADDITIONS: frozenset = frozenset()
 
 #: Entries whose picker placement deliberately diverges from top-models.json
 #: order; membership is still enforced. PR #28 groups the free DeepSeek V4
