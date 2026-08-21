@@ -7,7 +7,7 @@
 <p>Hermes gives your agent a body. ClawRouter gives it a wallet.<br>
 No provider accounts. No API keys. No credit card.<br><br>
 <strong>One Hermes provider, <!-- br:models.chatVisible -->71<!-- /br:models.chatVisible --> models from 12 labs, paid per request in USDC.</strong><br><br>
-<em><!-- br:models.free -->6<!-- /br:models.free --> models free — no crypto, no balance, no signup required.</em></p>
+<em><!-- br:models.free -->5<!-- /br:models.free --> models free — no crypto, no balance, no signup required.</em></p>
 
 <br>
 
@@ -33,7 +33,7 @@ No provider accounts. No API keys. No credit card.<br><br>
 
 </div>
 
-> **hermes-plugin-clawrouter** wires [NousResearch Hermes](https://github.com/NousResearch/hermes-agent) into [ClawRouter](https://github.com/BlockRunAI/ClawRouter), the open-source LLM router built for autonomous agents. One `pip install` gives Hermes <!-- br:models.chatVisible -->71<!-- /br:models.chatVisible --> chat models from OpenAI, Anthropic, Google, xAI, DeepSeek, Moonshot, Z.ai, MiniMax, Qwen, NVIDIA and more — plus image, video and web-search tools — behind a single local provider. Requests are scored across <!-- br:clawrouter.dimensions -->15<!-- /br:clawrouter.dimensions --> dimensions and routed to the cheapest capable model in under 1ms, cutting inference cost by <!-- br:savings.autoVsBaselinePct -->88<!-- /br:savings.autoVsBaselinePct -->% versus pinning Claude Opus 5. Authentication is a wallet signature, billing is USDC over [x402](https://x402.org) on Base or Solana, and <!-- br:models.free -->6<!-- /br:models.free --> models cost nothing at all. MIT licensed.
+> **hermes-plugin-clawrouter** wires [NousResearch Hermes](https://github.com/NousResearch/hermes-agent) into [ClawRouter](https://github.com/BlockRunAI/ClawRouter), the open-source LLM router built for autonomous agents. One `pip install` gives Hermes <!-- br:models.chatVisible -->71<!-- /br:models.chatVisible --> chat models from OpenAI, Anthropic, Google, xAI, DeepSeek, Moonshot, Z.ai, MiniMax, Qwen, NVIDIA and more — plus image, video and web-search tools — behind a single local provider. Requests are scored across <!-- br:clawrouter.dimensions -->15<!-- /br:clawrouter.dimensions --> dimensions and routed to the cheapest capable model in under 1ms, cutting inference cost by <!-- br:savings.autoVsBaselinePct -->88<!-- /br:savings.autoVsBaselinePct -->% versus pinning Claude Opus 5. Authentication is a wallet signature, billing is USDC over [x402](https://x402.org) on Base or Solana, and <!-- br:models.free -->5<!-- /br:models.free --> models cost nothing at all. MIT licensed.
 
 ---
 
@@ -45,7 +45,7 @@ Your agent can't do any of that. Agents can't open accounts or type in credit ca
 
 ClawRouter collapses the whole thing into one provider:
 
-- **Starts at $0** — <!-- br:models.free -->6<!-- /br:models.free --> free models, usable before you ever touch crypto
+- **Starts at $0** — <!-- br:models.free -->5<!-- /br:models.free --> free models, usable before you ever touch crypto
 - **One provider, every lab** — Hermes' `/model` picker shows the full curated catalog, grouped by provider
 - **No API keys** — the local wallet signature *is* authentication; you never hold a lab's key
 - **No model babysitting** — `blockrun/auto` scores each request across <!-- br:clawrouter.dimensions -->15<!-- /br:clawrouter.dimensions --> dimensions and picks the cheapest model that can actually do the job
@@ -60,7 +60,7 @@ ClawRouter collapses the whole thing into one provider:
 |                     | Hermes + lab API keys       | Hermes + OpenRouter | Local Ollama       | **ClawRouter for Hermes**                                             |
 | ------------------- | --------------------------- | ------------------- | ------------------ | --------------------------------------------------------------------- |
 | **Models**          | One provider block per lab  | Many                | Whatever you host  | **<!-- br:models.chatVisible -->71<!-- /br:models.chatVisible -->, one block**            |
-| **Free tier**       | No                          | Rate-limited        | Free but local GPU | **<!-- br:models.free -->6<!-- /br:models.free --> models, no signup** |
+| **Free tier**       | No                          | Rate-limited        | Free but local GPU | **<!-- br:models.free -->5<!-- /br:models.free --> models, no signup** |
 | **Auth**            | An API key per lab          | Account + API key   | None               | **Wallet signature**                                                  |
 | **Payment**         | Per-lab invoices            | Credit card         | Your electricity   | **USDC per request**                                                  |
 | **Model selection** | Manual                      | Manual              | Manual             | **Automatic (<!-- br:clawrouter.dimensions -->15<!-- /br:clawrouter.dimensions -->-dim scoring, <1ms)** |
@@ -156,7 +156,7 @@ Savings are computed from a published workload mix, not estimated — see [savin
 | Tool                        | Coverage                                                                                  |
 | --------------------------- | ----------------------------------------------------------------------------------------- |
 | `clawrouter_image_generate` | <!-- br:models.image -->9<!-- /br:models.image --> image models — GPT Image 2, Nano Banana / Pro, Seedream 5 Pro, Grok Imagine, CogView-4 |
-| `clawrouter_video_generate` | <!-- br:models.video -->6<!-- /br:models.video --> video models — Seedance 1.5 / 2.0, Grok Imagine, Sora 2 |
+| `clawrouter_video_generate` | <!-- br:models.video -->8<!-- /br:models.video --> video models — Seedance 1.5 / 2.0, Grok Imagine, Sora 2 |
 | `clawrouter_web_search`     | Exa-powered web search                                                                    |
 
 All three bill from the same wallet — no extra keys, no extra setup.
@@ -364,7 +364,7 @@ No. It adds one more provider. Existing OpenAI/Anthropic/OAuth blocks in `config
 
 ### Do I need crypto to try it?
 
-No. <!-- br:models.free -->6<!-- /br:models.free --> models are free with no wallet, no balance and no signup. Fund USDC only when you want frontier models.
+No. <!-- br:models.free -->5<!-- /br:models.free --> models are free with no wallet, no balance and no signup. Fund USDC only when you want frontier models.
 
 ### Where do my keys live?
 
