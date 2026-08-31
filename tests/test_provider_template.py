@@ -154,12 +154,13 @@ def test_curated_picker_catalog_orders_featured_models():
     ]
     assert free_tail == [
         "blockrun/free/deepseek-v4-flash",
-        "blockrun/free/seed-oss-36b",
+        "blockrun/free/nemotron-3.5-lightning",
+        "blockrun/free/nemotron-3-nano-30b",
+        "blockrun/free/laguna-xs-2.1",
+        "blockrun/free/north-mini-code",
         "blockrun/free/nemotron-3-nano-omni-30b-a3b-reasoning",
-        "blockrun/free/mistral-nemotron",
-        "blockrun/free/step-3.7-flash",
-        "blockrun/free/nemotron-nano-9b-v2",
-        "blockrun/free/nemotron-nano-12b-v2-vl",
+        "blockrun/free/nemotron-3-ultra-550b",
+        "blockrun/free/llama-3.2-11b-vision",
     ]
     # Retired models must not reappear in the picker. Append here on every
     # catalog retirement so a bad merge can't resurrect them.
@@ -183,6 +184,12 @@ def test_curated_picker_catalog_orders_featured_models():
         # server-redirected to gpt-oss-120b, so a picker entry would silently
         # defeat /exclude. ClawRouter's top-models.test.ts asserts the same.
         "blockrun/free/qwen3-next-80b-a3b-instruct",
+        # Retired 2026-08-31 sync: no longer in the live BlockRun catalog.
+        "blockrun/free/seed-oss-36b",
+        "blockrun/free/mistral-nemotron",
+        "blockrun/free/step-3.7-flash",
+        "blockrun/free/nemotron-nano-9b-v2",
+        "blockrun/free/nemotron-nano-12b-v2-vl",
     })
     assert not set(chat_models) & retired_models
 

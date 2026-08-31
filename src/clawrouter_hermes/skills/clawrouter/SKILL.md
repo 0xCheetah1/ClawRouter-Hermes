@@ -164,7 +164,7 @@ Rules handle ~80% of requests in <1ms. Only ambiguous queries hit the LLM classi
 
 ## Available Models
 
-<!-- br:models.chatVisible -->76<!-- /br:models.chatVisible --> models including: claude-fable-5, claude-opus-5, claude-opus-4.8, claude-opus-4.7, claude-sonnet-5, claude-sonnet-4.6, gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna, gpt-5.5, gpt-5.4, gemini-3.1-pro, gemini-3.5-flash, grok-4.5, grok-4.3, grok-build-0.1, deepseek-v4-pro, deepseek-v4-flash, deepseek-chat, glm-5.2, kimi-k3, minimax-m3, qwen3.7-max, and the curated free models (seed-oss-36b, nemotron-3-nano-omni-30b-a3b-reasoning [vision], mistral-nemotron, step-3.7-flash, nemotron-nano-9b-v2, nemotron-nano-12b-v2-vl [vision]).
+<!-- br:models.chatVisible -->76<!-- /br:models.chatVisible --> models including: claude-fable-5, claude-opus-5, claude-opus-4.8, claude-opus-4.7, claude-sonnet-5, claude-sonnet-4.6, gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna, gpt-5.5, gpt-5.4, gemini-3.1-pro, gemini-3.5-flash, grok-4.5, grok-4.3, grok-build-0.1, deepseek-v4-pro, deepseek-v4-flash, deepseek-chat, glm-5.2, kimi-k3, minimax-m3, qwen3.7-max, and the curated free models (nemotron-3.5-lightning, nemotron-3-nano-30b, laguna-xs-2.1, north-mini-code, nemotron-3-nano-omni-30b-a3b-reasoning [vision], nemotron-3-ultra-550b, llama-3.2-11b-vision [vision]).
 
 ## Built-in Agent Tools
 
