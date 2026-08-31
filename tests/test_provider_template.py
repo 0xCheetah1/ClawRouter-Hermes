@@ -32,7 +32,7 @@ FEATURED_MODELS = (
     "blockrun/moonshot/kimi-k3",
     "blockrun/qwen/qwen3.7-max",
     "blockrun/deepseek/deepseek-v4-pro",
-    "blockrun/free/deepseek-v4-flash",
+    "blockrun/free/nemotron-3.5-lightning",
 )
 
 
@@ -126,7 +126,7 @@ def test_curated_picker_catalog_contains_free_models():
     chat_models = models.chat_models()
     free_models = [model for model in chat_models if models.is_free_model(model)]
     assert "blockrun/free" in free_models
-    assert "blockrun/free/deepseek-v4-flash" in free_models
+    assert "blockrun/free/nemotron-3.5-lightning" in free_models
     assert any(model.startswith("blockrun/free/") for model in free_models)
 
 
@@ -145,15 +145,11 @@ def test_curated_picker_catalog_orders_featured_models():
     assert [positions[model] for model in featured_order] == sorted(
         positions[model] for model in featured_order
     )
-    # All per-model free entries sit contiguously at the end of the picker,
-    # and match the live free tier exactly (order mirrors top-models.json,
-    # with post-top-models catalog additions appended).
+    # All per-model free entries sit contiguously at the end of the picker
+    # and match the live free tier exactly, in top-models.json order.
     free_tail = [m for m in chat_models if m.startswith("blockrun/free/")]
-    assert chat_models[-(len(free_tail) - 1):] == [
-        model for model in free_tail if model != "blockrun/free/deepseek-v4-flash"
-    ]
+    assert chat_models[-len(free_tail):] == free_tail
     assert free_tail == [
-        "blockrun/free/deepseek-v4-flash",
         "blockrun/free/nemotron-3.5-lightning",
         "blockrun/free/nemotron-3-nano-30b",
         "blockrun/free/laguna-xs-2.1",
@@ -184,6 +180,13 @@ def test_curated_picker_catalog_orders_featured_models():
         # server-redirected to gpt-oss-120b, so a picker entry would silently
         # defeat /exclude. ClawRouter's top-models.test.ts asserts the same.
         "blockrun/free/qwen3-next-80b-a3b-instruct",
+        # EOL 2026-08-12 (blockrun #367): NVIDIA published 410 Gone, the
+        # gateway set hidden:true and server-redirects calls to a healthy
+        # free model, and ClawRouter dropped it from the picker, the
+        # FREE_MODELS cascade and the router fallbacks. A picker entry
+        # would bill nothing but answer from another model, silently
+        # defeating /exclude. top-models.test.ts asserts the same.
+        "blockrun/free/deepseek-v4-flash",
         # Retired 2026-08-31 sync: no longer in the live BlockRun catalog.
         "blockrun/free/seed-oss-36b",
         "blockrun/free/mistral-nemotron",
@@ -194,17 +197,24 @@ def test_curated_picker_catalog_orders_featured_models():
     assert not set(chat_models) & retired_models
 
 
-#: Curated entries that postdate the ClawRouter top-models.json snapshot.
-#: They are appended after the mirrored free tail rather than interleaved.
-#: Empty since 2026-08-03 — the picker mirrors top-models.json exactly.
-POST_TOP_MODELS_ADDITIONS: frozenset = frozenset()
+#: Curated entries that postdate the ClawRouter top-models.json snapshot:
+#: live in the BlockRun catalog (verified against /api/v1/models) but not
+#: yet picked up upstream, so they are exempt from the mirror check until
+#: ClawRouter ships them. Drop each one from here the moment it lands in
+#: top-models.json — a stale entry silences the guard for a real drift.
+POST_TOP_MODELS_ADDITIONS: frozenset = frozenset({
+    # Added 2026-08-31 sync.
+    "blockrun/google/gemini-3.6-flash",
+    "blockrun/google/gemini-3.5-flash-lite",
+    "blockrun/tencent/hy3",
+    "blockrun/xiaomi/mimo-v2.5-pro",
+})
 
 #: Entries whose picker placement deliberately diverges from top-models.json
-#: order; membership is still enforced. PR #28 groups the free DeepSeek V4
-#: Flash route with the paid DeepSeek models instead of the free tail.
-CURATED_PLACEMENT_OVERRIDES = frozenset({
-    "blockrun/free/deepseek-v4-flash",
-})
+#: order; membership is still enforced. Empty since 2026-08-31 — its only
+#: member, the free DeepSeek V4 Flash route PR #28 grouped with the paid
+#: DeepSeek models, was retired when NVIDIA EOL'd it.
+CURATED_PLACEMENT_OVERRIDES: frozenset = frozenset()
 
 
 def test_curated_picker_catalog_mirrors_clawrouter_top_models():
