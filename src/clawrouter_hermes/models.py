@@ -55,6 +55,7 @@ CHAT_MODELS = (
     "blockrun/qwen/qwen3.8-flash",
     "blockrun/tencent/hy3",
     "blockrun/deepseek/deepseek-v4-flash-vision-exp",
+    "blockrun/deepseek/deepseek-v4-flash",
     "blockrun/deepseek/deepseek-v4-pro",
     "blockrun/deepseek/deepseek-chat",
     "blockrun/deepseek/deepseek-reasoner",

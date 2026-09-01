@@ -167,8 +167,6 @@ def test_curated_picker_catalog_orders_featured_models():
         # v0.12.239 dropped it from top-models.json); alias pins keep the id
         # routable at the gateway but it leaves user-facing surfaces.
         "blockrun/free/mistral-large-3-675b",
-        # Never a real SKU: keep the free route ID in the DeepSeek group instead.
-        "blockrun/deepseek/deepseek-v4-flash",
         # Dropped from the live BlockRun catalog by 2026-07-17:
         "blockrun/xai/grok-4-1-fast-reasoning",
         "blockrun/xai/grok-4-0709",
