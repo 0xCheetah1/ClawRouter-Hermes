@@ -202,8 +202,12 @@ def test_curated_picker_catalog_orders_featured_models():
 #: ClawRouter ships them. Drop each one from here the moment it lands in
 #: top-models.json — a stale entry silences the guard for a real drift.
 #: Empty since 2026-08-31: ClawRouter #290 landed all four, so the picker
-#: mirrors top-models.json entry for entry again.
-POST_TOP_MODELS_ADDITIONS: frozenset = frozenset()
+#: mirrors top-models.json entry for entry again. Re-populated 2026-09-01 for
+#: the paid deepseek/deepseek-v4-flash, which ships here ahead of ClawRouter
+#: #299 adding it to top-models.json.
+POST_TOP_MODELS_ADDITIONS: frozenset = frozenset(
+    {"blockrun/deepseek/deepseek-v4-flash"},
+)
 
 #: Entries whose picker placement deliberately diverges from top-models.json
 #: order; membership is still enforced. Empty since 2026-08-31 — its only
